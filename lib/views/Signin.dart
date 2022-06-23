@@ -1,4 +1,6 @@
+import 'package:chatapp/services/database.dart';
 import 'package:chatapp/views/ChatRoomScreen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:chatapp/services/auth.dart';
 import '../helper/helperFunctions.dart';
@@ -16,11 +18,21 @@ class SignIn extends StatefulWidget {
 class _SignInState extends State<SignIn> {
   final _formKey = GlobalKey<FormState>();
   bool isloading = false;
+  late QuerySnapshot snapshot;
   String error = '';
   AuthMethods authMethods = AuthMethods();
+  DatabaseMethods databaseMethods = DatabaseMethods();
+
 
   signPplIn() async {
+    var userName;
     if(_formKey.currentState!.validate()){
+      HelperFunctions.saveUserEmailSharedPreference(emailTextEditingController.text);
+      databaseMethods.getUserByEmail(emailTextEditingController.text).then((val){
+        snapshot = val;
+        userName = (snapshot.docs[0].data()!as Map<String, dynamic>)['name'];
+        HelperFunctions.saveUserNameSharedPreference(userName);
+      });
       dynamic result = await authMethods.signInWithEmailAndPassword(emailTextEditingController.text, passwordTextEditingController.text);
       if(result!=null){
         HelperFunctions.saveUserLoggedInSharedPreference(true);
@@ -35,6 +47,7 @@ class _SignInState extends State<SignIn> {
       }
     }
   }
+
     TextEditingController emailTextEditingController = TextEditingController();
     TextEditingController passwordTextEditingController = TextEditingController();
   @override

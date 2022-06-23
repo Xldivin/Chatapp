@@ -19,14 +19,14 @@ static Future<bool>saveUserEmailSharedPreference(String userEmail) async{
 }
 static Future<bool?>getUserLoggedInSharedPreference() async{
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return await prefs.getBool(sharedPreferenceUserLoggedInKey);
+  return prefs.getBool(sharedPreferenceUserLoggedInKey);
 }
-static Future<bool?>getUserNameSharedPreference() async{
+static Future<String?>getUserNameSharedPreference() async{
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return await prefs.getBool(sharedPreferenceUserNameKey);
+  return prefs.getString(sharedPreferenceUserNameKey);
 }
 static Future<bool?>getUserEmailSharedPreference() async{
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  return await prefs.getBool(sharedPreferenceUserEmailKey);
+  return prefs.getBool(sharedPreferenceUserEmailKey);
 }
 }
