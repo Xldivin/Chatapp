@@ -1,8 +1,9 @@
 import 'package:chatapp/services/database.dart';
+import 'package:chatapp/views/ConversationScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'ChatRoomScreen.dart';
+import 'package:chatapp/helper/constant.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -23,13 +24,27 @@ class _SearchScreenState extends State<SearchScreen> {
   }
  /// this widget sends the searched user to chatroooms
   createChatroomConversation(String userName ){
-    List<String>  users = [userName];
-  }
+    if(userName != Constants.myname){
+      String chatRoomId = getChatRoomId(userName,Constants.myname);
+      List<String>  users = [userName, Constants.myname];
+      Map<String, dynamic> chatRoomMap = {
+        "users":users,
+        "chatroomId":chatRoomId
+      };
+      databaseMethods.createChatRooms(chatRoomId, chatRoomMap);
+      Navigator.push(context, MaterialPageRoute(
+          builder: (builder) => ConversationScreen(chatRoomId: chatRoomId,)
+      ));
+    }else{
+      print("you can not send messege to your self");
+    }
+    }
+
 /// this function(widget) returns the row of searched username
   Widget finishedList({ required String name, email}){
     return GestureDetector(
       onDoubleTap: (){
-
+        createChatroomConversation(name);
       },
       child: Row(
         children: [
@@ -129,6 +144,13 @@ class _SearchScreenState extends State<SearchScreen> {
           ],
         ),
     );
+  }
+}
+getChatRoomId(String a, String b) {
+  if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
+    return "$b\_$a";
+  } else {
+    return "$a\_$b";
   }
 }
 
